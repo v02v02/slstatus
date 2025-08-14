@@ -1,0 +1,10 @@
+#!/bin/sh
+
+network_status=$(nmcli networking connectivity)
+
+if [[ $network_status == 'full' ]]
+then
+    echo "󰖩"
+else
+    echo "󰖪"
+fi

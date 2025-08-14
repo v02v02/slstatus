@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if pgrep -U $USER -f "ffmpeg -f x11grab" > /dev/null
+then
+    echo "  "
+fi

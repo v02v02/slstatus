@@ -1,0 +1,15 @@
+#!/bin/sh
+
+volume_percent=$(pactl get-sink-volume @DEFAULT_SINK@ | cut -s -d/ -f2 | tr -d " %")
+volume_mutestatus=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d" " -f2)
+
+if [[ $volume_percent -eq 0 ]] || [[ $volume_mutestatus == "yes" ]]
+then
+    echo ""
+elif [[ $volume_percent -gt 0 ]] && [[ $volume_percent -lt 51 ]]
+then
+    echo ""
+elif [[ $volume_percent -ge 51 ]]
+then
+    echo ""
+fi
