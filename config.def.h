@@ -1,6 +1,9 @@
 /* See LICENSE file for copyright and license details. */
 
 /* v02v02's build of slstatus.
+ * 
+ * Notes:
+ * - You must have the package "ttf-nerd-fonts-symbols" in order for the glyphs to render.
  *
  * Current output:
  * (From left to right)
