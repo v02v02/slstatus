@@ -1,0 +1,87 @@
+#!/bin/sh
+
+# Notes:
+# - For some peculiar reason, when the $battery_status variable reads the /sys/class/power_supply/BAT0/status file
+#   and the battery is discharging; the time to complete the operation is increased a hundred fold.
+#   When the battery is charging the time to complete the operation is normal though.
+#   See: `battery_status=$(< /sys/class/power_supply/BAT0/status)`
+#
+
+# Check to see if the user has a battery in their machine.
+# If not, do nothing.
+if [[ ! -d /sys/class/power_supply/BAT0 ]]
+then
+    exit 1
+fi
+
+# Define an associative array and assign it a bunch of glyphs.
+declare -A glyphs
+glyphs[perc0_discharging]='󱃍'
+glyphs[perc10_discharging]='󰁺'
+glyphs[perc20_discharging]='󰁻'
+glyphs[perc30_discharging]='󰁼'
+glyphs[perc40_discharging]='󰁽'
+glyphs[perc50_discharging]='󰁾'
+glyphs[perc60_discharging]='󰁿'
+glyphs[perc70_discharging]='󰂀'
+glyphs[perc80_discharging]='󰂁'
+glyphs[perc90_discharging]='󰂂'
+glyphs[perc100_discharging]='󰁹'
+glyphs[perc0_charging]='󰢟' 
+glyphs[perc10_charging]='󰢜' 
+glyphs[perc20_charging]='󰂆'
+glyphs[perc30_charging]='󰂇'
+glyphs[perc40_charging]='󰂈'
+glyphs[perc50_charging]='󰢝'
+glyphs[perc60_charging]='󰂉'
+glyphs[perc70_charging]='󰢞'
+glyphs[perc80_charging]='󰂊'
+glyphs[perc90_charging]='󰂋'
+glyphs[perc100_charging]='󰂅' 
+
+# Output the current capacity of the users battery into a variable.
+battery_capacity=$(< /sys/class/power_supply/BAT0/capacity)
+
+# Output whether or not the battery is charging into a variable.
+battery_status=$(< /sys/class/power_supply/BAT0/status)
+
+check_battery() {
+    # If the battery capacity in the device is greater than or equal to the first argument passed to the function check_battery(),
+    # AND the battery capacity in the device is less than or equal to the first arugment passed to the function check_battery() plus 9...
+    if [[ "$battery_capacity" -ge ${1} ]] && [[ "$battery_capacity" -le $(( ${1} + 9 )) ]]
+    then
+	# ...then check to see if the battery is currently being charged.
+	# If it is, then echo the battery glyph that best suits the users current battery capacity;
+	# along with the glyph having a charging symbol within it.
+	# Also echo the actual percentage of the battery capacity next to the glyph.
+	if [[ "$battery_status" == "Charging" ]] || [[ "$battery_status" == "Full" ]]
+	then
+	    echo "${glyphs[perc${1}_charging]} ${battery_capacity}%"
+	else
+	# If the battery is NOT being charged, then echo the battery glyph that best suits the users current battery capacity,
+	# WITHOUT the glyph having a charging symbol within it.
+	# Still echo the actual percentage of the battery capacity next to the glyph.
+	    echo "${glyphs[perc${1}_discharging]} ${battery_capacity}%"
+	fi
+	# If you don't want the actual percentage as output and only want the respective glyph,
+	# remove the following snippet from both echo statements.
+	# ` ${battery_capacity}%`
+    fi
+    # This is the chart of the glyphs and the respective $battery_capacity values that trigger them.
+	# Capacity  Glyph (Discharging/Charging)
+    	#     0-9%  󱃍 / 󰢟 | 
+    	#   10-19%  󰁺 / 󰢜 |
+    	#   20-29%  󰁻 / 󰂆 |
+    	#   30-39%  󰁼 / 󰂇 |
+    	#   40-49%  󰁽 / 󰂈 |
+    	#   50-59%  󰁾 / 󰢝 |
+    	#   60-69%  󰁿 / 󰂉 |
+    	#   70-79%  󰂀 / 󰢞 |
+    	#   80-89%  󰂁 / 󰂊 |
+    	#   90-99%  󰂂 / 󰂋 |
+    	#     100%  󰁹 / 󰂅 |
+}
+
+# Does a floor rounding function to get an increment of 10.
+# The rounded number is then used as an argument for the check_battery() function.
+check_battery $(( $battery_capacity - (${battery_capacity} % 10) ))

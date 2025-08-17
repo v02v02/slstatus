@@ -3,7 +3,7 @@
 /* v02v02's build of slstatus.
  * 
  * Notes:
- * - You must have the package "ttf-nerd-fonts-symbols" in order for the glyphs to render.
+ * - You must have the packages "ttf-nerd-fonts-symbols" and "woff2-font-awesome" in order for the glyphs to render.
  *
  * Current output:
  * (From left to right)
