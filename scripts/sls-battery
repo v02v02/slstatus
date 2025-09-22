@@ -45,23 +45,33 @@ battery_capacity=$(< /sys/class/power_supply/BAT0/capacity)
 # Output whether or not the battery is charging into a variable.
 battery_status=$(< /sys/class/power_supply/BAT0/status)
 
+# Adds some options for "$0".
+while getopts ':pP' options
+do
+    case $options in
+	p) suffix="  ${battery_capacity}" ;;  # -p: Appends the battery percentage to the output.
+	P) suffix="  ${battery_capacity}%" ;; # -P: Appends the battery percentage AND a % sign to the output.
+	*) exit 1 ;;
+    esac
+done
+
 check_battery() {
     # If the battery capacity in the device is greater than or equal to the first argument passed to the function check_battery(),
-    # AND the battery capacity in the device is less than or equal to the first arugment passed to the function check_battery() plus 9...
+    # AND the battery capacity in the device is less than or equal to the first argument passed to the function check_battery() plus 9...
     if [[ "$battery_capacity" -ge ${1} ]] && [[ "$battery_capacity" -le $(( ${1} + 9 )) ]]
     then
 	# ...then check to see if the battery is currently being charged.
 	# If it is, then echo the battery glyph that best suits the users current battery capacity;
 	# along with the glyph having a charging symbol within it.
-	# Also echo the actual percentage of the battery capacity next to the glyph.
+	# Also echo the actual percentage of the battery capacity next to the glyph. (If the user passed the -p or -P flag)
 	if [[ "$battery_status" == "Charging" ]] || [[ "$battery_status" == "Full" ]]
 	then
-	    echo "${glyphs[perc${1}_charging]} ${battery_capacity}%"
+	    echo "${glyphs[perc${1}_charging]}${suffix}"
 	else
 	# If the battery is NOT being charged, then echo the battery glyph that best suits the users current battery capacity,
 	# WITHOUT the glyph having a charging symbol within it.
-	# Still echo the actual percentage of the battery capacity next to the glyph.
-	    echo "${glyphs[perc${1}_discharging]} ${battery_capacity}%"
+	# Still echo the actual percentage of the battery capacity next to the glyph. (If the user passed the -p or -P flag)
+	    echo "${glyphs[perc${1}_discharging]}${suffix}"
 	fi
 	# If you don't want the actual percentage as output and only want the respective glyph,
 	# remove the following snippet from both echo statements.
@@ -69,17 +79,17 @@ check_battery() {
     fi
     # This is the chart of the glyphs and the respective $battery_capacity values that trigger them.
 	# Capacity  Glyph (Discharging/Charging)
-    	#     0-9%  󱃍 / 󰢟 | 
-    	#   10-19%  󰁺 / 󰢜 |
-    	#   20-29%  󰁻 / 󰂆 |
-    	#   30-39%  󰁼 / 󰂇 |
-    	#   40-49%  󰁽 / 󰂈 |
-    	#   50-59%  󰁾 / 󰢝 |
-    	#   60-69%  󰁿 / 󰂉 |
-    	#   70-79%  󰂀 / 󰢞 |
-    	#   80-89%  󰂁 / 󰂊 |
-    	#   90-99%  󰂂 / 󰂋 |
-    	#     100%  󰁹 / 󰂅 |
+    	#     0-9%  󱃍 / 󰢟
+    	#   10-19%  󰁺 / 󰢜
+    	#   20-29%  󰁻 / 󰂆
+    	#   30-39%  󰁼 / 󰂇
+    	#   40-49%  󰁽 / 󰂈
+    	#   50-59%  󰁾 / 󰢝
+    	#   60-69%  󰁿 / 󰂉
+    	#   70-79%  󰂀 / 󰢞
+    	#   80-89%  󰂁 / 󰂊
+    	#   90-99%  󰂂 / 󰂋
+    	#     100%  󰁹 / 󰂅
 }
 
 # Does a floor rounding function to get an increment of 10.

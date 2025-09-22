@@ -15,7 +15,7 @@
  *
  *
  * Tweaks made:
- * - Created a seperate directory called "scripts" within the repo. [/]
+ * - Created a separate directory called "scripts" within the repo. [/]
  *   (This contains all of the custom scripts I've wrote that slstatus can execute for additional output.)
  *
  * - Changed the value of "unknown_str[]" to make it empty. [config.def.h]
@@ -98,6 +98,6 @@ static const struct arg args[] = {
 	{ run_command, "%s",           "sls-screencast"},
         { run_command, "%s",           "sls-network"},
         { run_command, " %s ",         "sls-sound"},
-	{ datetime,    "  %s",        "%d" },
+	{ datetime,    "   %s",        "%d" },
 	{ datetime,    " %s",          "%l:%M %p" },
 };

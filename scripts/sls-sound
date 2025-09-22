@@ -3,32 +3,25 @@
 volume_percent=$(pactl get-sink-volume @DEFAULT_SINK@ | cut -s -d/ -f2 | tr -d " %")
 volume_mutestatus=$(pactl get-sink-mute @DEFAULT_SINK@ | cut -d" " -f2)
 
+while getopts ':pP' options
+do
+    case $options in
+	p) suffix="  ${volume_percent}" ;;  # -p: Appends the volume percentage to the output.
+	P) suffix="  ${volume_percent}%" ;; # -P: Appends the volume percentage AND a % sign to the output.
+	*) exit 1 ;;
+    esac
+done
+
 if [[ $volume_percent -eq 0 ]] || [[ $volume_mutestatus == "yes" ]]
 then
-    echo ""
+    echo "${suffix}"
 elif [[ $volume_percent -gt 0 ]] && [[ $volume_percent -le 33 ]]
 then
-    echo ""
+    echo "${suffix}"
 elif [[ $volume_percent -gt 33 ]] && [[ $volume_percent -le 66 ]]
 then
-    echo ""
+    echo "${suffix}"
 elif [[ $volume_percent -gt 66 ]]
 then
-    echo ""
+    echo "${suffix}"
 fi
-
-
-# The percentage of the volume is added to the output.
-#if [[ $volume_percent -eq 0 ]] || [[ $volume_mutestatus == "yes" ]]
-#then
-#    echo " ${volume_percent}%"
-#elif [[ $volume_percent -gt 0 ]] && [[ $volume_percent -le 33 ]]
-#then
-#    echo " ${volume_percent}%"
-#elif [[ $volume_percent -gt 33 ]] && [[ $volume_percent -le 66 ]]
-#then
-#    echo " ${volume_percent}%"
-#elif [[ $volume_percent -gt 66 ]]
-#then
-#    echo " ${volume_percent}%"
-#fi
